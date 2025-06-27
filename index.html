@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer Segnale Orario Configurabile</title>
+    <title>Timer Segnale Orario Stabile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -32,7 +32,7 @@
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
             padding: 30px;
             width: 100%;
-            max-width: 900px;
+            max-width: 850px;
             margin: 20px;
             animation: fadeIn 0.8s ease-out;
         }
@@ -68,16 +68,21 @@
             color: #e0e0e0;
         }
 
-        .global-config {
+        .config-section {
             background: rgba(255, 255, 255, 0.08);
             border-radius: 15px;
             padding: 25px;
             margin: 25px 0;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
         }
 
-        .global-config h2 {
+        .config-section.visible {
+            display: block;
+        }
+
+        .config-section h2 {
             font-size: 1.8rem;
             margin-bottom: 20px;
             color: #4fc3f7;
@@ -105,9 +110,6 @@
             font-size: 1.1rem;
             color: #bb86fc;
             font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .config-item input {
@@ -125,14 +127,6 @@
             outline: none;
             border-color: #4fc3f7;
             box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.3);
-        }
-
-        .config-item .value-display {
-            margin-top: 5px;
-            font-size: 0.9rem;
-            color: #aaa;
-            display: flex;
-            justify-content: space-between;
         }
 
         .timer-display {
@@ -282,17 +276,17 @@
             box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
         }
 
-        .btn.save {
-            background: linear-gradient(to right, #4caf50, #8bc34a);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        .btn.config {
+            background: linear-gradient(to right, #7b1fa2, #9c27b0);
+            box-shadow: 0 5px 15px rgba(123, 31, 162, 0.4);
         }
 
         .btn.test:hover {
             box-shadow: 0 8px 20px rgba(0, 188, 212, 0.6);
         }
 
-        .btn.save:hover {
-            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.6);
+        .btn.config:hover {
+            box-shadow: 0 8px 20px rgba(123, 31, 162, 0.6);
         }
 
         .status {
@@ -337,31 +331,6 @@
             color: #bdbdbd;
         }
 
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-        }
-
-        @keyframes ripple {
-            to {
-                transform: scale(2.5);
-                opacity: 0;
-            }
-        }
-
-        .countdown-pulse {
-            animation: countdownPulse 1s infinite;
-        }
-
-        @keyframes countdownPulse {
-            0% { text-shadow: 0 0 10px rgba(118, 255, 3, 0.6); }
-            50% { text-shadow: 0 0 20px rgba(118, 255, 3, 0.9); }
-            100% { text-shadow: 0 0 10px rgba(118, 255, 3, 0.6); }
-        }
-
         .floating-btn {
             position: absolute;
             top: 20px;
@@ -385,18 +354,29 @@
             transform: rotate(30deg);
         }
 
-        .config-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
         }
 
-        .config-description {
-            margin-bottom: 20px;
-            color: #aaa;
-            font-style: italic;
-            text-align: center;
+        @keyframes ripple {
+            to {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        .countdown-pulse {
+            animation: countdownPulse 1s infinite;
+        }
+
+        @keyframes countdownPulse {
+            0% { text-shadow: 0 0 10px rgba(118, 255, 3, 0.6); }
+            50% { text-shadow: 0 0 20px rgba(118, 255, 3, 0.9); }
+            100% { text-shadow: 0 0 10px rgba(118, 255, 3, 0.6); }
         }
 
         @media (max-width: 768px) {
@@ -429,7 +409,7 @@
 <body>
     <div class="container">
         <div class="floating-btn" id="config-toggle">
-            <i class="fas fa-cog" style="font-size: 1.5rem;"></i>
+            <i class="fas fa-sliders-h" style="font-size: 1.5rem;"></i>
         </div>
         
         <header>
@@ -437,55 +417,24 @@
             <p class="subtitle">Configura il segnale acustico e imposta gli orari di lavoro</p>
         </header>
         
-        <div class="global-config">
-            <div class="config-header">
-                <h2><i class="fas fa-cogs"></i> Configurazione Avanzata</h2>
-                <div class="btn save" id="save-config-btn">
-                    <i class="fas fa-save"></i> Salva
-                </div>
-            </div>
-            
-            <p class="config-description">Configura i parametri di default per il segnale acustico. Le impostazioni verranno salvate nel tuo browser.</p>
-            
+        <div class="config-section" id="config-section">
+            <h2><i class="fas fa-cogs"></i> Configurazione Segnale Acustico</h2>
             <div class="config-grid">
                 <div class="config-item">
-                    <label for="beep-count"><i class="fas fa-bell"></i> Numero di beep</label>
-                    <input type="range" id="beep-count" min="1" max="10" value="3">
-                    <div class="value-display">
-                        <span>Min: 1</span>
-                        <span id="beep-count-value">3</span>
-                        <span>Max: 10</span>
-                    </div>
+                    <label for="beep-count"><i class="fas fa-bell"></i> Numero di beep:</label>
+                    <input type="number" id="beep-count" min="1" max="10" value="3">
                 </div>
-                
                 <div class="config-item">
-                    <label for="beep-pause"><i class="fas fa-pause"></i> Pausa tra beep (ms)</label>
-                    <input type="range" id="beep-pause" min="50" max="1000" step="50" value="200">
-                    <div class="value-display">
-                        <span>50ms</span>
-                        <span id="beep-pause-value">200ms</span>
-                        <span>1000ms</span>
-                    </div>
+                    <label for="beep-pause"><i class="fas fa-pause"></i> Pausa tra beep (ms):</label>
+                    <input type="number" id="beep-pause" min="50" max="1000" value="200">
                 </div>
-                
                 <div class="config-item">
-                    <label for="beep-duration"><i class="fas fa-hourglass-half"></i> Durata beep (ms)</label>
-                    <input type="range" id="beep-duration" min="50" max="2000" step="50" value="500">
-                    <div class="value-display">
-                        <span>50ms</span>
-                        <span id="beep-duration-value">500ms</span>
-                        <span>2000ms</span>
-                    </div>
+                    <label for="beep-duration"><i class="fas fa-hourglass-half"></i> Durata beep (ms):</label>
+                    <input type="number" id="beep-duration" min="50" max="2000" value="500">
                 </div>
-                
                 <div class="config-item">
-                    <label for="beep-frequency"><i class="fas fa-wave-square"></i> Frequenza (Hz)</label>
-                    <input type="range" id="beep-frequency" min="100" max="2000" step="50" value="800">
-                    <div class="value-display">
-                        <span>100Hz</span>
-                        <span id="beep-frequency-value">800Hz</span>
-                        <span>2000Hz</span>
-                    </div>
+                    <label for="beep-frequency"><i class="fas fa-wave-square"></i> Frequenza (Hz):</label>
+                    <input type="number" id="beep-frequency" min="100" max="2000" value="800">
                 </div>
             </div>
         </div>
@@ -557,6 +506,9 @@
         </div>
         
         <div class="controls">
+            <button class="btn config" id="show-config-btn">
+                <i class="fas fa-sliders-h"></i> Configura Beep
+            </button>
             <button class="btn test" id="test-btn">
                 <i class="fas fa-play"></i> Prova Segnale
             </button>
@@ -564,7 +516,6 @@
         
         <footer>
             <p>Timer Segnale Orario - Suona ogni ora negli orari di lavoro specificati</p>
-            <p>Le impostazioni vengono salvate automaticamente nel tuo browser</p>
         </footer>
     </div>
     
@@ -578,65 +529,14 @@
             const nextAlarmEl = document.getElementById('next-alarm');
             const alarmStatusEl = document.getElementById('alarm-status');
             const testBtn = document.getElementById('test-btn');
-            const saveConfigBtn = document.getElementById('save-config-btn');
+            const showConfigBtn = document.getElementById('show-config-btn');
+            const configSection = document.getElementById('config-section');
+            const configToggle = document.getElementById('config-toggle');
             const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-            
-            // Elementi configurazione
-            const beepCountInput = document.getElementById('beep-count');
-            const beepCountValue = document.getElementById('beep-count-value');
-            const beepPauseInput = document.getElementById('beep-pause');
-            const beepPauseValue = document.getElementById('beep-pause-value');
-            const beepDurationInput = document.getElementById('beep-duration');
-            const beepDurationValue = document.getElementById('beep-duration-value');
-            const beepFrequencyInput = document.getElementById('beep-frequency');
-            const beepFrequencyValue = document.getElementById('beep-frequency-value');
             
             // Stato dell'app
             let nextAlarmTime = null;
             let audioContext;
-            let isConfigSaved = false;
-            
-            // Carica la configurazione salvata
-            function loadConfig() {
-                const savedConfig = JSON.parse(localStorage.getItem('beepConfig')) || {};
-                
-                beepCountInput.value = savedConfig.beepCount || 3;
-                beepPauseInput.value = savedConfig.beepPause || 200;
-                beepDurationInput.value = savedConfig.beepDuration || 500;
-                beepFrequencyInput.value = savedConfig.beepFrequency || 800;
-                
-                updateConfigDisplay();
-            }
-            
-            // Salva la configurazione
-            function saveConfig() {
-                const config = {
-                    beepCount: parseInt(beepCountInput.value),
-                    beepPause: parseInt(beepPauseInput.value),
-                    beepDuration: parseInt(beepDurationInput.value),
-                    beepFrequency: parseInt(beepFrequencyInput.value)
-                };
-                
-                localStorage.setItem('beepConfig', JSON.stringify(config));
-                
-                // Mostra feedback visivo
-                isConfigSaved = true;
-                saveConfigBtn.innerHTML = '<i class="fas fa-check"></i> Salvato!';
-                saveConfigBtn.style.background = 'linear-gradient(to right, #4caf50, #8bc34a)';
-                
-                setTimeout(() => {
-                    saveConfigBtn.innerHTML = '<i class="fas fa-save"></i> Salva';
-                    saveConfigBtn.style.background = 'linear-gradient(to right, #7b1fa2, #9c27b0)';
-                }, 2000);
-            }
-            
-            // Aggiorna la visualizzazione dei valori di configurazione
-            function updateConfigDisplay() {
-                beepCountValue.textContent = beepCountInput.value;
-                beepPauseValue.textContent = beepPauseInput.value + 'ms';
-                beepDurationValue.textContent = beepDurationInput.value + 'ms';
-                beepFrequencyValue.textContent = beepFrequencyInput.value + 'Hz';
-            }
             
             // Inizializza l'audio
             function initAudio() {
@@ -649,12 +549,30 @@
                 }
             }
             
+            // Effetto ripple per pulsanti
+            function createRipple(event) {
+                const button = event.currentTarget;
+                const circle = document.createElement("span");
+                const diameter = Math.max(button.clientWidth, button.clientHeight);
+                const radius = diameter / 2;
+                
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${event.clientX - button.offsetLeft - radius}px`;
+                circle.style.top = `${event.clientY - button.offsetTop - radius}px`;
+                circle.classList.add("ripple");
+                
+                const ripple = button.getElementsByClassName("ripple")[0];
+                if (ripple) ripple.remove();
+                
+                button.appendChild(circle);
+            }
+            
             // Riproduci una sequenza di beep in base alla configurazione
             async function playBeepSequence() {
-                const beepCount = parseInt(beepCountInput.value) || 3;
-                const beepPause = parseInt(beepPauseInput.value) || 200;
-                const beepDuration = parseInt(beepDurationInput.value) || 500;
-                const frequency = parseInt(beepFrequencyInput.value) || 800;
+                const beepCount = parseInt(document.getElementById('beep-count').value) || 3;
+                const beepPause = parseInt(document.getElementById('beep-pause').value) || 200;
+                const beepDuration = parseInt(document.getElementById('beep-duration').value) || 500;
+                const frequency = parseInt(document.getElementById('beep-frequency').value) || 800;
                 
                 try {
                     if (!audioContext) initAudio();
@@ -833,6 +751,12 @@
             // Aggiorna il timer ogni secondo
             setInterval(updateCountdown, 1000);
             
+            // Aggiungi effetto ripple ai pulsanti
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', createRipple);
+            });
+            
             // Event listeners
             testBtn.addEventListener('click', function() {
                 playBeepSequence();
@@ -845,27 +769,22 @@
                 }, 3000);
             });
             
-            saveConfigBtn.addEventListener('click', saveConfig);
-            
-            // Aggiorna i valori quando si modificano gli slider
-            beepCountInput.addEventListener('input', function() {
-                beepCountValue.textContent = this.value;
+            // Mostra/nascondi configurazione
+            showConfigBtn.addEventListener('click', function() {
+                configSection.classList.toggle('visible');
+                showConfigBtn.innerHTML = configSection.classList.contains('visible') ? 
+                    '<i class="fas fa-times"></i> Nascondi Configurazione' : 
+                    '<i class="fas fa-sliders-h"></i> Configura Beep';
             });
             
-            beepPauseInput.addEventListener('input', function() {
-                beepPauseValue.textContent = this.value + 'ms';
-            });
-            
-            beepDurationInput.addEventListener('input', function() {
-                beepDurationValue.textContent = this.value + 'ms';
-            });
-            
-            beepFrequencyInput.addEventListener('input', function() {
-                beepFrequencyValue.textContent = this.value + 'Hz';
+            configToggle.addEventListener('click', function() {
+                configSection.classList.toggle('visible');
+                showConfigBtn.innerHTML = configSection.classList.contains('visible') ? 
+                    '<i class="fas fa-times"></i> Nascondi Configurazione' : 
+                    '<i class="fas fa-sliders-h"></i> Configura Beep';
             });
             
             // Inizializza
-            loadConfig();
             updateDayIndicator();
             updateCountdown();
             initAudio();
