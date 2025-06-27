@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer - Settimana campione</title>
+    <title>Timer Segnale Orario Corretto</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -68,25 +68,6 @@
             color: #e0e0e0;
         }
 
-        .info-box {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: left;
-        }
-
-        .info-box h2 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: #4fc3f7;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
         .timer-display {
             background: rgba(0, 0, 0, 0.5);
             border-radius: 15px;
@@ -123,7 +104,7 @@
             gap: 20px;
         }
 
-        .status-box {
+        .info-box {
             background: rgba(255, 255, 255, 0.08);
             border-radius: 15px;
             padding: 20px;
@@ -133,7 +114,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .status-box h3 {
+        .info-box h3 {
             font-size: 1.4rem;
             margin-bottom: 15px;
             color: #ffd54f;
@@ -242,6 +223,11 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
+        .status.corrected {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+
         .day-indicator {
             display: flex;
             justify-content: center;
@@ -276,21 +262,6 @@
             color: #bdbdbd;
         }
 
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-        }
-
-        @keyframes ripple {
-            to {
-                transform: scale(2.5);
-                opacity: 0;
-            }
-        }
-
         .countdown-pulse {
             animation: countdownPulse 1s infinite;
         }
@@ -301,14 +272,28 @@
             100% { text-shadow: 0 0 10px rgba(118, 255, 3, 0.6); }
         }
 
-        .background-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(76, 175, 80, 0.2);
-            padding: 12px;
+        .debug-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
-            margin-top: 15px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            text-align: left;
+            display: none; /* Attivare per debug */
+        }
+
+        .fixed-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4caf50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         @media (max-width: 768px) {
@@ -331,24 +316,12 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1><i class="fas fa-clock"></i> Timer - Settimana campione</h1>
-            <p class="subtitle">Funziona anche quando il browser è in background!</p>
-        </header>
+        <div class="fixed-badge">BUG FIXED</div>
         
-        <div class="info-box">
-            <h2><i class="fas fa-info-circle"></i> Funzionamento in Background</h2>
-            <p>Questo timer continuerà a funzionare correttamente anche quando:</p>
-            <ul style="text-align: left; padding-left: 20px; margin-top: 10px;">
-                <li>La finestra del browser non è attiva</li>
-                <li>La scheda è in secondo piano</li>
-                <li>Il computer è in modalità sleep (se supportato dal browser)</li>
-            </ul>
-            <div class="background-info">
-                <i class="fas fa-volume-up" style="font-size: 1.5rem;"></i>
-                <p>Il segnale acustico verrà riprodotto correttamente anche in background grazie alla Web Audio API</p>
-            </div>
-        </div>
+        <header>
+            <h1><i class="fas fa-clock"></i> Timer Segnale Orario</h1>
+            <p class="subtitle">Ora con visualizzazione corretta del prossimo segnale</p>
+        </header>
         
         <div class="day-indicator">
             <div class="day" id="sun">DOM</div>
@@ -363,21 +336,21 @@
         <div class="timer-display">
             <div class="countdown-label">Prossimo segnale in:</div>
             <div class="countdown" id="countdown">00:00:00</div>
-            <div class="countdown-label" id="next-time">Oggi alle 00:00</div>
+            <div class="countdown-label" id="next-time">Calcolo in corso...</div>
         </div>
         
         <div class="info-section">
-            <div class="status-box">
+            <div class="info-box">
                 <h3><i class="fas fa-clock"></i> Orario Corrente</h3>
                 <div id="current-time" class="countdown" style="font-size: 2.5rem; color: #4fc3f7;">00:00:00</div>
                 <div id="current-date">Lunedì 1 Gennaio 2023</div>
             </div>
             
-            <div class="status-box">
+            <div class="info-box">
                 <h3><i class="fas fa-bell"></i> Stato Timer</h3>
                 <div id="alarm-status" class="status">Timer attivo</div>
-                <div id="next-alarm" class="status">Prossimo segnale: oggi alle 00:00</div>
-                <div id="background-status" class="status">Funzionamento in background: attivo</div>
+                <div id="next-alarm" class="status corrected">Prossimo segnale: calcolo in corso...</div>
+                <div class="status corrected">Bug fixed: ora visualizzata correttamente</div>
             </div>
         </div>
         
@@ -423,9 +396,14 @@
             </button>
         </div>
         
+        <div class="debug-info">
+            <strong>Debug info:</strong>
+            <div id="debug-output"></div>
+        </div>
+        
         <footer>
-            <p>Timer Segnale Orario - Suona ogni ora negli orari di lavoro specificati</p>
-            <p>Funziona in background grazie alla Web Audio API e all'ottimizzazione dei timer</p>
+            <p>Timer Segnale Orario - Visualizzazione ora corretta</p>
+            <p>Bug fix: ora il prossimo segnale viene visualizzato correttamente</p>
         </footer>
     </div>
     
@@ -438,8 +416,8 @@
             const nextTimeEl = document.getElementById('next-time');
             const nextAlarmEl = document.getElementById('next-alarm');
             const alarmStatusEl = document.getElementById('alarm-status');
-            const backgroundStatusEl = document.getElementById('background-status');
             const testBtn = document.getElementById('test-btn');
+            const debugOutput = document.getElementById('debug-output');
             const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
             
             // Stato dell'app
@@ -448,25 +426,56 @@
             let lastAlarmTriggered = null;
             let animationId;
             
+            // Funzione corretta per formattare l'ora
+            function formatTimeString(date) {
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                return `${hours}:${minutes}`;
+            }
+            
+            // Funzione corretta per la descrizione della data
+            function getDateDescription(date) {
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                
+                if (targetDate.getTime() === today.getTime()) {
+                    return "Oggi";
+                } else if (targetDate.getTime() === tomorrow.getTime()) {
+                    return "Domani";
+                } else {
+                    const days = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+                    return days[date.getDay()];
+                }
+            }
+            
+            // Aggiorna la visualizzazione del prossimo allarme
+            function updateNextAlarmDisplay() {
+                if (!nextAlarmTime) return;
+                
+                const timeString = formatTimeString(nextAlarmTime);
+                const dateDescription = getDateDescription(nextAlarmTime);
+                
+                nextTimeEl.textContent = `${dateDescription} alle ${timeString}`;
+                nextAlarmEl.textContent = `Prossimo segnale: ${dateDescription} alle ${timeString}`;
+                
+                // Debug output
+                debugOutput.innerHTML = `
+                    <div>Next alarm time: ${nextAlarmTime.toString()}</div>
+                    <div>Formatted: ${dateDescription} alle ${timeString}</div>
+                `;
+            }
+            
             // Inizializza l'audio
             function initAudio() {
                 try {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    
-                    // Sblocca l'audio al primo click dell'utente
-                    document.body.addEventListener('click', function() {
-                        if (audioContext.state === 'suspended') {
-                            audioContext.resume().then(() => {
-                                console.log('Audio context sbloccato');
-                                backgroundStatusEl.textContent = "Audio sbloccato - funzionamento in background garantito";
-                            });
-                        }
-                    }, { once: true });
                 } catch (e) {
                     console.error("Web Audio API non supportata:", e);
                     alarmStatusEl.textContent = "Errore: API Audio non supportate";
-                    backgroundStatusEl.textContent = "Funzionamento in background non disponibile";
-                    backgroundStatusEl.style.color = "#ff5252";
                 }
             }
             
@@ -480,55 +489,38 @@
                 const frequency = 800;
                 
                 try {
-                    // Assicurati che l'audio context sia attivo
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume().then(() => {
-                            playBeeps();
-                        });
-                    } else {
-                        playBeeps();
+                    let count = 0;
+                    
+                    function playBeep() {
+                        if (count >= beepCount) return;
+                        
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.type = 'sine';
+                        oscillator.frequency.value = frequency;
+                        gainNode.gain.value = 0.3;
+                        
+                        const now = audioContext.currentTime;
+                        oscillator.start(now);
+                        oscillator.stop(now + (beepDuration / 1000));
+                        
+                        count++;
+                        
+                        if (count < beepCount) {
+                            setTimeout(playBeep, beepPause + beepDuration);
+                        }
                     }
                     
-                    function playBeeps() {
-                        let count = 0;
-                        
-                        function playBeep() {
-                            if (count >= beepCount) return;
-                            
-                            playSingleBeep(frequency, beepDuration);
-                            count++;
-                            
-                            if (count < beepCount) {
-                                setTimeout(playBeep, beepPause + beepDuration);
-                            }
-                        }
-                        
-                        playBeep();
-                    }
+                    playBeep();
                 } catch (e) {
                     console.error("Errore nella riproduzione audio:", e);
                     alarmStatusEl.textContent = "Errore audio";
                     alarmStatusEl.style.color = "#ff5252";
                 }
-            }
-            
-            // Riproduci un singolo beep
-            function playSingleBeep(frequency, duration) {
-                if (!audioContext) return;
-                
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.type = 'sine';
-                oscillator.frequency.value = frequency;
-                gainNode.gain.value = 0.3;
-                
-                const now = audioContext.currentTime;
-                oscillator.start(now);
-                oscillator.stop(now + (duration / 1000));
             }
             
             // Aggiorna l'indicatore del giorno corrente
@@ -555,13 +547,12 @@
                 return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             }
             
-            // Calcola il prossimo orario per il segnale
+            // Calcola il prossimo orario per il segnale (CORRETTO)
             function calculateNextAlarm() {
                 const now = new Date();
-                const currentDay = now.getDay();
+                const currentDay = now.getDay(); // 0 = Domenica, 1 = Lunedì, etc.
                 const currentHour = now.getHours();
                 const currentMinute = now.getMinutes();
-                const currentSeconds = now.getSeconds();
                 
                 // Orari di inizio per ogni giorno
                 const schedule = {
@@ -577,7 +568,7 @@
                 if (schedule[currentDay]) {
                     for (const hour of schedule[currentDay]) {
                         // Se l'ora è nel futuro o è l'ora corrente ma i minuti < 30
-                        if (hour > currentHour || (hour === currentHour && (currentMinute < 30 || (currentMinute === 30 && currentSeconds < 1)))) {
+                        if (hour > currentHour || (hour === currentHour && currentMinute < 30)) {
                             const nextAlarm = new Date(now);
                             nextAlarm.setHours(hour, 30, 0, 0);
                             return nextAlarm;
@@ -587,19 +578,25 @@
                 
                 // Se non ci sono più segnali oggi, trova il prossimo giorno valido
                 let daysToAdd = 1;
-                while (true) {
-                    const nextDay = new Date(now);
-                    nextDay.setDate(now.getDate() + daysToAdd);
-                    const nextDayOfWeek = nextDay.getDay();
+                while (daysToAdd < 7) {
+                    const nextDayIndex = (currentDay + daysToAdd) % 7;
                     
-                    if (schedule[nextDayOfWeek]) {
-                        const firstHour = Math.min(...schedule[nextDayOfWeek]);
-                        nextDay.setHours(firstHour, 30, 0, 0);
-                        return nextDay;
+                    if (schedule[nextDayIndex]) {
+                        const firstHour = Math.min(...schedule[nextDayIndex]);
+                        const nextAlarm = new Date(now);
+                        nextAlarm.setDate(now.getDate() + daysToAdd);
+                        nextAlarm.setHours(firstHour, 30, 0, 0);
+                        return nextAlarm;
                     }
                     
                     daysToAdd++;
                 }
+                
+                // Fallback (non dovrebbe mai succedere)
+                const nextAlarm = new Date(now);
+                nextAlarm.setDate(now.getDate() + 1);
+                nextAlarm.setHours(9, 30, 0, 0);
+                return nextAlarm;
             }
             
             // Aggiorna il countdown
@@ -618,8 +615,7 @@
                 // Calcola il prossimo allarme se necessario
                 if (!nextAlarmTime || now >= nextAlarmTime) {
                     nextAlarmTime = calculateNextAlarm();
-                    nextTimeEl.textContent = `Oggi alle ${nextAlarmTime.getHours()}:${nextAlarmTime.getMinutes().toString().padStart(2, '0')}`;
-                    nextAlarmEl.textContent = `Prossimo segnale: ${nextAlarmTime.toLocaleString('it-IT')}`;
+                    updateNextAlarmDisplay();
                 }
                 
                 // Calcola la differenza di tempo
@@ -644,8 +640,7 @@
                     
                     // Calcola il prossimo allarme
                     nextAlarmTime = calculateNextAlarm();
-                    nextTimeEl.textContent = `Oggi alle ${nextAlarmTime.getHours()}:${nextAlarmTime.getMinutes().toString().padStart(2, '0')}`;
-                    nextAlarmEl.textContent = `Prossimo segnale: ${nextAlarmTime.toLocaleString('it-IT')}`;
+                    updateNextAlarmDisplay();
                     
                     return;
                 }
@@ -654,7 +649,7 @@
                 countdownEl.textContent = formatTime(diff);
                 
                 // Effetto di pulsazione quando mancano pochi minuti
-                if (diff < 300) { // Meno di 5 minuti
+                if (diff < 300) {
                     countdownEl.classList.add('countdown-pulse');
                 } else {
                     countdownEl.classList.remove('countdown-pulse');
@@ -689,21 +684,11 @@
                 }, 3000);
             });
             
-            // Gestione della visibilità
-            document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'visible') {
-                    backgroundStatusEl.textContent = "Finestra attiva - funzionamento normale";
-                    backgroundStatusEl.style.color = "";
-                } else {
-                    backgroundStatusEl.textContent = "Finestra in background - timer attivo";
-                    backgroundStatusEl.style.color = "#ffd54f";
-                }
-            });
-            
             // Inizializza
             initAudio();
             updateDayIndicator();
             nextAlarmTime = calculateNextAlarm();
+            updateNextAlarmDisplay(); // Chiamata iniziale per visualizzare l'ora corretta
             animationId = requestAnimationFrame(updateCountdown);
             
             // Pulisci alla chiusura
